@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+ <mapper namespace="com.zhiyou.dao.SubjectDao">
+ <cache type="com.zhiyou.redis.RedisCache"/>
+  <select id="selectLikeAll" resultType="subject">
+ <bind name="namee" value="'%'+like+'%'"/>
+ select * from subject where subject_name like #{namee}
+ </select>
+ <insert id="adds" parameterType="subject">
+ insert into subject(id,subject_name) values(null,#{subject_name})
+ </insert>
+ 
+   <select id="selectAll" resultType="subject">
+ select * from subject 
+ </select>
+   <select id="selectid" resultType="subject">
+ select * from subject where id=#{id}
+ </select>
+ <!-- <resultMap type="subject" id="subjectMap">
+ <id column="id" property="id"/>
+ <result column="title" property="title"/>
+ <result column="detail" property="detail"/>
+ <result column="time" property="time"/>
+ <result column="speaker_id" property="speaker_id"/>
+ <result column="course_id" property="course_id"/>
+ <result column="video_url" property="video_url"/>
+ <result column="image_url" property="image_url"/>
+ <result column="play_num" property="play_num"/>
+
+ 用来指定单个对象
+ <association property="subject">
+ <id column="speaker_id" property="speaker_id"/>
+ <result column="subject_name" property="subject_name"/>
+ </association>
+ </resultMap>
+  -->
+  
+  
+  
+  	<!-- <resultMap type="subject" id="subjectMap2">
+		<id column="id" property="id"/>
+		<id column="subject_name" property="subject_name"/>
+		<collection property="courseList" ofType="com.zhiyou.model.Course">
+			<id property="course_id" column="course_id"/>
+			<result property="course_title" column="course_title"/>
+			<result property="course_desc" column="course_desc"/>
+			<result property="subject_id" column="subject_id"/>
+			用来指定集合
+			<collection property="videooList" ofType="com.zhiyou.model.Video">
+				<id property="id" column="id"/>
+				<result property="title" column="title"/>
+				<result property="detail" column="detail"/>
+				<result property="time" column="time"/>
+				<result property="speaker_id" column="speaker_id"/>
+				<result property="course_id" column="course_id"/>
+				<result property="video_url" column="video_url"/>
+				<result property="image_url" column="image_url"/>
+				<result property="play_num" column="play_num"/>
+			</collection> 
+		</collection>
+	</resultMap> -->
+	
+	
+	
+	
+	<select id="selectAll2" resultType="subject">
+		select * from subject where id=#{all}
+	
+	</select>
+	
+	<select id="selectCourseAndVideo" resultType="subject">
+		SELECT *  FROM  subject s, (select c.course_title,c.course_desc,c.subject_id,v.* 
+			from course c LEFT JOIN video v ON c.id = v.course_id) z 
+		WHERE s.id=z.subject_id AND s.id=#{sid}
+	</select>
+	
+		<select id="selectCourseAndVideo3" resultType="subject">
+		SELECT *  FROM  subject s, (select c.course_title,c.course_desc,c.subject_id,v.* 
+			from course c LEFT JOIN video v ON c.id = v.course_id) z 
+		WHERE s.id=z.subject_id AND s.id=#{sid}
+	</select>
+  
+ </mapper>

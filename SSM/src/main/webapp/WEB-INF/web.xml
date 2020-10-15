@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+  <display-name>SSM</display-name>
+  <!-- 默认系统页面 --> 
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+  <!-- 过滤器 -->
+  <filter>
+  <filter-name>encoding</filter-name>
+  <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+  <init-param>
+  <param-name>encoding</param-name>
+  <param-value>UTF-8</param-value>
+  </init-param>
+  </filter>
+   <filter-mapping>
+  <filter-name>encoding</filter-name>
+  <url-pattern>/*</url-pattern>
+  </filter-mapping>
+   
+   
+   
+   
+<!--    <filter>
+  <filter-name>UserFilter</filter-name>
+  <filter-class>com.zhilyou.filter.UserFilter</filter-class>
+  </filter>
+ <filter-mapping>
+ <filter-name>UserFilter</filter-name>
+ <url-pattern>/*</url-pattern>
+ </filter-mapping>   -->
+  <!-- 加载Spring配置文件,并通过全局参数配置,将配置文件的位置告诉监听器。 -->
+  <filter>
+  <filter-name>UserFiter2</filter-name>
+  <filter-class>com.zhiyou.filter.UserFiter2</filter-class>
+  </filter>
+  <filter-mapping>
+  <filter-name>UserFiter2</filter-name>
+  <url-pattern>/videotshow</url-pattern>
+  </filter-mapping>
+  
+  
+  
+     <filter>
+  <filter-name>UserFilter2</filter-name>
+  <filter-class>com.zhiyou.filter.AdminFilter</filter-class>
+  </filter>
+ <filter-mapping>
+ <filter-name>UserFilter2</filter-name>
+ <url-pattern>/adminvideoshow</url-pattern>
+ </filter-mapping>
+  
+  <context-param>
+  	<param-name>contextConfigLocation</param-name>
+  	<param-value>classpath:application_jdbc.xml</param-value>
+  </context-param>
+  <listener>
+  <!-- 这个监听器,可以读取Spring配置文件,然后帮助我们初始化Spring容器 -->
+  	<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  
+  <!-- 配置SpringMVC的前端控制器 DispatcherServlet --> 
+  <servlet>
+  	<servlet-name>spring-mvc</servlet-name>
+  	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+  	<init-param>
+  		<param-name>contextConfigLocation</param-name>
+  		<param-value>classpath:application_mvc.xml</param-value>
+  	</init-param>
+  	<!--配置服务器启动加载spring MVC 配置文件  <load-on-startup>1</load-on-startup>-->
+  	
+  </servlet>  
+  <!-- 配置前端控制器的拦截路径 -->
+  <servlet-mapping>
+  	<servlet-name>spring-mvc</servlet-name>
+  	<url-pattern>/</url-pattern>
+  </servlet-mapping>
+
+    <error-page>
+ <error-code>500</error-code>
+ <location>/exception.jsp</location>
+ </error-page>
+  
+</web-app>

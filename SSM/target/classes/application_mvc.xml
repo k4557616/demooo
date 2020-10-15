@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+	<!-- 开启SpringMVC的注解驱动 -->
+	<mvc:annotation-driven />
+	<!-- SpringMVC扫描注解的路径 -->
+	<context:component-scan base-package="com.zhiyou.controller" />
+	<!-- 开启静态资源的支持 -->
+	<mvc:default-servlet-handler />
+	<!-- 配置视图解析器：可以给我们返回的视图自动添加前缀,后缀 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- 给视图添加一个后缀 -->
+		<property name="suffix" value=".jsp" />
+	</bean>
+	<!-- 配置拦截器 拦截的请求是 放行 指定拦截的类 -->
+	
+  <mvc:interceptors>
+		 <mvc:interceptor>
+			<mvc:mapping path="/**" />
+		     <mvc:exclude-mapping path="/在线公开课-智游教育_java_大数据_HTML5_python_UI_PHP视频教程_files/*"/>  
+			<mvc:exclude-mapping path="/*/*.js"/>
+			<mvc:exclude-mapping path="/*.css"/>
+			<mvc:exclude-mapping path="/*.js"/>
+			<mvc:exclude-mapping path="/login"/>
+			<mvc:exclude-mapping path="/loginuser"/>
+			<mvc:exclude-mapping path="/subjectCourseAndVideoo"/>
+			<mvc:exclude-mapping path="/subjectCourseAndVideoo/在线公开课-智游教育_java_大数据_HTML5_python_UI_PHP视频教程_files/*"/>
+			<mvc:exclude-mapping path="/课程展示_files/*"/>
+			<mvc:exclude-mapping path="/videoimg/*"/>
+			<mvc:exclude-mapping path="/userRegister"/>
+			<mvc:exclude-mapping path="/ByEmail"/>
+			<mvc:exclude-mapping path="/*/在线公开课-智游教育_java_大数据_HTML5_python_UI_PHP视频教程_files/*"/>
+			<mvc:exclude-mapping path="/jquery/*.js"/>
+			<mvc:exclude-mapping path="/userSelect"/>
+			<mvc:exclude-mapping path="/adminSelect"/>
+			<bean class="com.zhiyou.interceptor.UserInterceptor"></bean>
+		</mvc:interceptor>
+
+ <!-- 拦截器2 -->
+        <mvc:interceptor>
+			
+			 <mvc:mapping path="/useruploas"/><!-- 拦截就是具体实现的url,可以说是url文件的上传方法 -->
+			<mvc:exclude-mapping path="/upload2"/><!--  这个是表单action的东西 -->
+			<bean class="com.zhiyou.interceptor.ImageInterceptor"></bean>  <!-- 拦截的类 -->
+		</mvc:interceptor>
+	</mvc:interceptors>   
+
+
+	<!-- <mvc:interceptor> <mvc:mapping path="/**"/> <mvc:exclude-mapping path="/login"/> 
+		<bean class="com.zhiyou.interceptor.AdminInterceptor"></bean> </mvc:interceptor> -->
+
+	<!-- 配置文件上传 id要求要固定 -->
+
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 文件的大小 -->
+		<property name="maxUploadSize" value="#{1024*1024*100}"></property>
+		<!-- 读取文件的速度 -->
+		<property name="maxInMemorySize" value="4096"></property>
+
+		<property name="defaultEncoding" value="UTF-8"></property>
+	</bean>
+
+</beans>

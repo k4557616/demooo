@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+ <mapper namespace="com.zhiyou.dao.VideoDao">
+ <cache type="com.zhiyou.redis.RedisCache"/>
+ <select id="selectLikeAll" resultType="video">
+ <bind name="namee" value="'%'+like+'%'"/>
+ select * from video where title like #{namee}
+ </select>
+ <select id="selectById" resultType="video">
+ select * from video where id=#{id}
+ </select>
+ 
+ <delete id="deleteAll" parameterType="video">
+ delete from video where id in
+ <foreach collection="ids" item="id" close=")" open="(" separator=",">
+ #{id}
+ </foreach>
+ </delete>
+ 
+ <delete id="delete" parameterType="video">
+  delete from video where id=#{id}
+ </delete>
+ 
+  <resultMap type="video" id="videoMap">
+ <id column="id" property="id"/>
+ <result column="title" property="title"/>
+ <result column="detail" property="detail"/>
+ <result column="time" property="time"/>
+ <result column="speaker_id" property="speaker_id"/>
+ <result column="course_id" property="course_id"/>
+ <result column="video_url" property="video_url"/>
+ <result column="image_url" property="image_url"/>
+ <result column="play_num" property="play_num"/>
+<!--  用来指定集合 -->
+<!-- <collection property="speakers" ofType="speaker">
+ <id column="speaker_id" property="speaker_id"/>
+ <result column="speaker_name" property="speaker_name"/>
+ <result column="speaker_desc" property="speaker_desc"/>
+ <result column="speaker_job" property="speaker_job"/>
+ <result column="head_img_url" property="head_img_url"/>
+</collection>
+
+<collection property="subjects" ofType="subject">
+ <id column="id" property="id"/>
+ <result column="subject_name" property="subject_name"/>
+</collection> -->
+  <association property="speaker" javaType="com.zhiyou.model.Speaker">
+ <id column="speaker_id" property="speaker_id"/>
+ <result column="speaker_name" property="speaker_name"/>
+ <result column="speaker_desc" property="speaker_desc"/>
+ <result column="speaker_job" property="speaker_job"/>
+ <result column="head_img_url" property="head_img_url"/>
+ </association>
+
+<association property="subject" javaType="com.zhiyou.model.Subject">
+ <id column="id" property="id"/>
+ <result column="subject_name" property="subject_name"/>
+ </association>
+
+ </resultMap>
+  
+ 
+  <resultMap type="video" id="videoMap2">
+ <id column="id" property="id"/>
+ <result column="title" property="title"/>
+ <result column="detail" property="detail"/>
+ <result column="time" property="time"/>
+ <result column="speaker_id" property="speaker_id"/>
+ <result column="course_id" property="course_id"/>
+ <result column="video_url" property="video_url"/>
+ <result column="image_url" property="image_url"/>
+ <result column="play_num" property="play_num"/>
+  <association property="speaker" javaType="com.zhiyou.model.Speaker">
+ <id column="speaker_id" property="speaker_id"/>
+ <result column="speaker_name" property="speaker_name"/>
+ <result column="speaker_desc" property="speaker_desc"/>
+ <result column="speaker_job" property="speaker_job"/>
+ <result column="head_img_url" property="head_img_url"/>
+ </association>
+ 
+ <association property="course" javaType="com.zhiyou.model.Course">
+  <id column="id" property="id"/>
+ <result column="course_title" property="course_title"/>
+ <result column="course_desc" property="course_desc"/>
+ <result column="subject_id" property="subject_id"/>
+ 
+ </association>
+ 
+ <association property="subject" javaType="com.zhiyou.model.Subject">
+ <id column="id" property="id"/>
+ <result column="subject_name" property="subject_name"/>
+ </association>
+
+ </resultMap>
+ 
+ <select id="selectAll" resultMap="videoMap">
+<!--  select * from speaker  d  left join video  e on  d.speaker_id=e.speaker_id   order by d.speaker_name  ASC
+ --> 
+SELECT * FROM speaker d  ,video e WHERE d.speaker_id=e.speaker_id order by d.speaker_name  ASC
+ </select>
+ 
+ <select id="selectSpeaker" resultMap="videoMap2">
+ select * from video v left join  speaker s on v.speaker_id=s.speaker_id
+ </select>
+ 
+ 
+ <select id="selectLikeSS" resultMap="videoMap2">
+ 
+ <bind name="namee" value="'%'+name+'%'"/>
+ <bind name="titlee" value="'%'+title+'%'"/>
+  <bind name="titl" value="'%'+tit+'%'"/>
+ 
+
+select v.*,s.speaker_name from
+		video v,speaker s where v.speaker_id=s.speaker_id and v.speaker_id like #{namee} and v.course_id like #{titlee} and v.title like #{titl}
+
+ </select>
+ <select id="selectBYID" resultMap="videoMap2">
+ select *
+from video v 
+left join  speaker sp on v.speaker_id=sp.speaker_id
+left join  course c on v.course_id=c.id 
+LEFT JOIN  `subject` su on c.subject_id=su.id
+where v.id=#{id}
+
+ </select>
+ 
+ <!-- 查询全部 -->
+	<select id="selectAll2" resultMap="videoMap2">
+		SELECT * FROM video v,course c,speaker s WHERE v.course_id=c.id AND v.speaker_id=s.speaker_id
+		<if test="id!=null">and v.id=#{videooId}</if>
+		<if test="course_id!=null">and v.course_id=#{courseId}</if>
+	</select>
+ 
+ 
+  <select id="selectSubject" resultMap="videoMap2">
+ 
+ <bind name="namee" value="'%'+name+'%'"/>
+
+
+select v.*,s.speaker_name from
+		video v,speaker s where v.speaker_id=s.speaker_id and v.speaker_id like #{namee} 
+
+ </select>
+ <select id="selectweb" resultMap="videoMap2">
+ 
+select *
+from video v 
+left join  speaker sp on v.speaker_id=sp.speaker_id
+left join  course c on v.course_id=c.id 
+LEFT JOIN  `subject` su on c.subject_id=su.id
+where 
+su.subject_name  like '%WEB前端%'
+ </select>
+ 
+ <!--  查询ID视频-->
+ <select id="selectvideoid" resultMap="videoMap2">
+ select *
+from video v 
+left join  speaker sp on v.speaker_id=sp.speaker_id
+left join  course c on v.course_id=c.id 
+LEFT JOIN  `subject` su on c.subject_id=su.id
+where  su.id=#{id}
+ 
+ </select>
+ 
+  <select id="selectui" resultMap="videoMap2">
+ 
+ select *
+from video v 
+left join  speaker sp on v.speaker_id=sp.speaker_id
+left join  course c on v.course_id=c.id 
+LEFT JOIN  `subject` su on c.subject_id=su.id
+ where su.subject_name 
+like '%UI%'
+
+ </select>
+   <select id="selectPython" resultMap="videoMap2">
+
+select *
+from video v 
+left join  speaker sp on v.speaker_id=sp.speaker_id
+left join  course c on v.course_id=c.id 
+LEFT JOIN  `subject` su on c.subject_id=su.id
+ where su.subject_name 
+like '%Python%'
+ </select>
+ 
+    <select id="selectPhp" resultMap="videoMap2">
+
+select *
+from video v 
+left join  speaker sp on v.speaker_id=sp.speaker_id
+left join  course c on v.course_id=c.id 
+LEFT JOIN  `subject` su on c.subject_id=su.id
+ where su.subject_name 
+like '%PHP%'
+ </select>
+    <select id="selectJava" resultMap="videoMap2">
+
+select *
+from video v 
+left join  speaker sp on v.speaker_id=sp.speaker_id
+left join  course c on v.course_id=c.id 
+LEFT JOIN  `subject` su on c.subject_id=su.id
+ where su.subject_name 
+like '%Java%'
+ </select>
+ 
+     <select id="selectda" resultMap="videoMap2">
+
+select *
+from video v 
+left join  speaker sp on v.speaker_id=sp.speaker_id
+left join  course c on v.course_id=c.id 
+LEFT JOIN  `subject` su on c.subject_id=su.id
+ where su.subject_name 
+like '%大数据%'
+ </select>
+ 
+<!--
+CONCAT('%',WEB前端,'%')
+select *
+from video v 
+left join  speaker sp on v.speaker_id=sp.speaker_id
+left join  course c on v.course_id=c.id 
+LEFT JOIN  `subject` su on c.subject_id=su.id
+
+ where   sp.speaker_name like #{namee}  and su.subject_name like #{titlee} and v.title like #{titl}
+ or (sp.speaker_name like #{namee}  or su.subject_name  like #{titlee} or v.title like #{titl})  -->
+<select id="selectAllMH" resultMap="videoMap2">
+ <bind name="namee" value="'%'+name+'%'"/>
+ <bind name="titlee" value="'%'+title+'%'"/>
+select *
+from video v 
+left join  speaker sp on v.speaker_id=sp.speaker_id
+left join  course c on v.course_id=c.id 
+LEFT JOIN  `subject` su on c.subject_id=su.id
+
+ where   sp.speaker_name like #{namee}  and su.subject_name like #{titlee}
+ or (sp.speaker_name like #{namee}  or su.subject_name  like #{titlee})
+ 
+ Limit  #{page},5
+</select>
+ <!-- or (sp.speaker_name like #{namee}  or su.subject_name  like #{titlee})
+ or (sp.speaker_name like #{namee}  or su.subject_name  like #{titlee})
+  -->
+<!-- <select id="NameSum"  resultType="int">
+ <bind name="namee" value="'%'+name+'%'"/>
+ <bind name="titlee" value="'%'+title+'%'"/>
+ select *
+from video v 
+left join  speaker sp on v.speaker_id=sp.speaker_id
+left join  course c on v.course_id=c.id 
+LEFT JOIN  `subject` su on c.subject_id=su.id
+ where   sp.speaker_name like #{namee}  or su.subject_name like #{titlee}
+ 
+ </select>  -->
+ 
+ <insert id="add" parameterType="video">
+ insert into video(id,title,detail,time,video_url,image_url,speaker_id,course_id) values(null,#{title},#{detail},#{time},#{video_url},#{image_url},#{speaker_id},#{course_id}) 
+ </insert>
+ 
+<!--   <update id="update" parameterType="video">
+       update video
+		<trim prefix="set" suffixOverrides="," prefixOverrides=",">
+		<if test="title!=null">
+				title=#{title},
+			</if>
+			<if test="time!=null">
+				time=#{time},
+			</if>
+				<if test="speaker_id!=null">
+				speaker_id=#{speaker_id},
+			</if>
+			<if test="course_id!=null">
+				course_id=#{course_id},
+			</if>
+			<if test="video_url!=null">
+				video_url=#{video_url},
+			</if>
+			<if test="image_url!=null">
+				image_url=#{image_url},
+			</if>
+		    <if test="play_num!=null">
+		    play_num=#{play_num}
+		    </if>
+
+		</trim>
+		<where>
+				id=#{id}
+		</where>
+ </update> -->
+ 
+ 	<update parameterType="video" id="update">
+		update video
+		<trim prefixOverrides="," prefix="set">
+			<if test="title!=null"> title=#{title} </if>
+			<if test="detail!=null"> , detail=#{detail}</if>
+			<if test="time!=null"> , time=#{time}</if>
+			<if test="speaker_id!=null"> , speaker_id=#{speaker_id}</if>
+			<if test="course_id!=null"> , course_id=#{course_id}</if>
+			<if test="video_url!=null"> , video_url=#{video_url}</if>
+			<if test="image_url!=null"> , image_url=#{image_url}</if>
+			<if test="play_num!=null"> , play_num=#{play_num}</if>
+		</trim>
+		where id = #{id} 
+	</update>
+ 
+ 
+ <update id="updatePlay" parameterType="int">
+ update video set play_num=#{play_num} where id=#{id}
+ </update>
+  <!--
+ <delete id="delete" parameterType="course" >
+		delete from course where id=#{sd};
+	</delete>
+ 
+ <delete id="deleteAll" parameterType="course" >
+ delete from course where  id in
+ <foreach collection="ids" item="id" close=")" open="(" separator=",">  
+ #{id}
+ </foreach>
+ </delete>
+ <select id="selectById" resultType="course">
+		select * from course where id=#{idddd}
+	</select>
+ <select id="selectLikeAll" resultType="course">
+
+ <bind name="namee" value="'%'+like+'%'"/>
+		select * from course where course_title like #{namee}
+ </select> -->
+
+ </mapper>
